@@ -1,67 +1,69 @@
-const LostReason = require("../models/lostreason");
+const LostReason=require('../models/lostreason'); 
 const ErrorHander = require("../utils/errorhander");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 
+
+
 // create lost reason
 
-exports.addLostReason = catchAsyncErrors(async (req, res, next) => {
-  const lostreason = await LostReason.create(req.body);
+exports.addLostReason=catchAsyncErrors(async (req,res,next)=>{
 
-  res.status(201).json({
-    success: true,
-    lostreason,
-  });
-});
+          const lostreason=await LostReason.create(req.body);
+
+          res.status(201).json({
+           success: true,
+           lostreason,
+         });  
+})
 
 // Delete lost reason
 
-exports.deleteLostReason = catchAsyncErrors(async (req, res, next) => {
-  const lostreason = await LostReason.findById(req.params.id);
+exports.deleteLostReason=catchAsyncErrors(async (req,res,next)=>{
 
-  if (!lostreason) {
-    return next(new ErrorHander("lost reason is not found", 404));
-  }
+   const lostreason=await LostReason.findById(req.params.id);
 
-  await lostreason.deleteOne();
+   if(!lostreason){
+     return next(new ErrorHander("lost reason is not found",404));
+   }
 
-  res.status(201).json({
-    success: true,
-    message: "Deleated Successfully",
-    lostreason,
-  });
-});
+   await lostreason.deleteOne();   
+
+   res.status(201).json({
+     success:true,
+     message:"Deleated Successfully",
+     lostreason,
+   }) 
+   
+}) 
 
 // get All lost reason
-exports.getAllLostReason = catchAsyncErrors(async (req, res, next) => {
-  const lostreason = await LostReason.find();
+exports.getAllLostReason=catchAsyncErrors(async(req,res,next)=>{
+         const lostreason=await LostReason.find();
 
-  res.status(200).json({
-    success: true,
-    lostreason,
-  });
-});
+         res.status(200).json({
+           success:true,
+           lostreason
+         })
+})
 
-////  update Lost Reason
+////  update Lost Reason 
 
-exports.updateLostReason = catchAsyncErrors(async (req, res, next) => {
-  const lostreason = await LostReason.findById(req.params.id);
+exports.updateLostReason=catchAsyncErrors(async (req,res,next)=>{
+     
+     const lostreason=await LostReason.findById(req.params.id);  
 
-  if (!lostreason) {
-    return next(new ErrorHander("Status is not found", 404));
-  }
+     if(!lostreason){
+       return next(new ErrorHander("Status is not found",404));
+     }
 
-  const lostreason1 = await LostReason.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    {
-      new: true,
-      runValidators: true,
-      useFindAndModify: false,
-    }
-  );
+    const  lostreason1=await LostReason.findByIdAndUpdate(req.params.id,req.body,{
+        new:true,
+        runValidators:true,
+        useFindAndModify:false,
+     })
 
-  res.status(200).json({
-    success: true,
-    lostreason1,
-  });
-});
+     res.status(200).json({
+        success:true,
+        lostreason1
+     })
+})

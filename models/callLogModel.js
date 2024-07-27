@@ -7,7 +7,7 @@ const callLogSchema = new mongoose.Schema(
       //required: true,
       trim: true,
     },
-    user_id: {
+    user_id:{
       type: String,
       required: true,
       trim: true,
@@ -29,13 +29,13 @@ const callLogSchema = new mongoose.Schema(
       trim: true,
     },
     rawtype: {
-      type: Number,
-      trim: true,
-    },
-    type: {
-      type: String,
-      trim: true,
-    },
+        type: Number,
+       trim: true,
+      },
+      type: {   
+        type: String,
+        trim: true,
+      },
   },
   {
     timestamps: true,

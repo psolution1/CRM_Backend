@@ -18,17 +18,17 @@ const whatappsmsSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    priority: {
-      type: String,
-      trim: true,
+    priority:{
+        type: String,
+        trim: true,
     },
-    stype: {
-      type: String,
-      trim: true,
+    stype:{
+        type: String,
+        trim: true,
     },
-    htype: {
-      type: String,
-      trim: true,
+    htype:{
+        type: String,
+        trim: true,
     },
   },
   {

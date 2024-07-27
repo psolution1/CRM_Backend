@@ -1,12 +1,12 @@
 const mongoose = require("mongoose");
 
-const followupSchema = new mongoose.Schema({
-  lead_id: {
+const followupSchema = new mongoose.Schema({  
+    lead_id: {
     type: String,
     required: true,
     trim: true,
-  },
-  commented_by: {
+  },  
+  commented_by: { 
     type: String,
     // required: true,
     trim: true,
@@ -15,20 +15,20 @@ const followupSchema = new mongoose.Schema({
     type: String,
     //required: true,
     trim: true,
-  },
+  },  
   followup_lost_reason_id: {
     type: String,
     trim: true,
-  },
+  }, 
   followup_won_amount: {
     type: Number,
     trim: true,
   },
   followup_date: {
-    type: Date,
+    type: Date, 
     trim: true,
   },
-  followup_desc: {
+  followup_desc: {   
     type: String,
     trim: true,
   },
@@ -36,7 +36,7 @@ const followupSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
-  followup_status: {
+  followup_status: {   
     type: Number,
     default: 1,
     //required: true,
@@ -52,7 +52,7 @@ const followupSchema = new mongoose.Schema({
     default: 0,
     trim: true,
   },
-
+ 
   created: {
     type: Date,
     default: Date.now,
@@ -61,9 +61,9 @@ const followupSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  deleted: {
+  deleted: {  
     type: Date,
-  },
+  }
 });
 
 module.exports = mongoose.model("crm_followup", followupSchema);

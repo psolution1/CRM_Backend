@@ -22,6 +22,7 @@ const transactionalsmsSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+
   },
   {
     timestamps: true,

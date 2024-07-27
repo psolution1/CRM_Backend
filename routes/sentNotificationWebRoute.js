@@ -1,11 +1,9 @@
-const express = require("express");
+const express=require('express');
 
-const {
-  sendnotificationinweb,
-} = require("../controllers/sentNotificationWebController");
+const { sendnotificationinweb } =require('../controllers/sentNotificationWebController');
 
-const router = express.Router();
+const router=express.Router();
 
-router.route("/sendnotificationinweb").post(sendnotificationinweb);
-
-module.exports = router;
+router.route('/sendnotificationinweb').post(sendnotificationinweb);
+  
+module.exports=router;   

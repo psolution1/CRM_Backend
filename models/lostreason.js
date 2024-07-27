@@ -14,7 +14,7 @@ const lostreasonSchema = new mongoose.Schema(
     lost_reason_status: {
       type: Number,
       default: 1,
-      trim: true,
+      trim: true,  
     },
   },
   {

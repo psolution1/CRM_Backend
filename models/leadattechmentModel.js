@@ -17,7 +17,7 @@ const leadAttechmentSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
-  created: {
+  created: {  
     type: Date,
     default: Date.now,
   },

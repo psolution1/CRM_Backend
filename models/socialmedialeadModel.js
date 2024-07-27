@@ -18,10 +18,10 @@ const socialmedialeadSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    source: {
+    source:{
       type: String,
-      trim: true,
-    },
+      trim: true, 
+    }
   },
   {
     timestamps: true,

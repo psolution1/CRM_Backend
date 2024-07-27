@@ -4,17 +4,18 @@ const uploadcontactDataSchema = new mongoose.Schema(
   {
     uplodecontactid: {
       type: mongoose.Schema.ObjectId,
-      required: true,
+      required:true,
       trim: true,
     },
     clientname: {
-      type: String,
-      trim: true,
-    },
-    clientMobile: {
-      type: String,
-      trim: true,
-    },
+        type: String,
+        trim: true,
+      },
+      clientMobile: {
+        type: String,
+        trim: true,
+      },
+   
   },
   {
     timestamps: true,

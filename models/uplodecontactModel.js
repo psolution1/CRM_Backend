@@ -8,10 +8,10 @@ const uploadcontactSchema = new mongoose.Schema(
       trim: true,
     },
     document_second_name: {
-      type: String,
-      required: true,
-      trim: true,
-    },
+        type: String,
+        required: true,
+        trim: true,
+      },
   },
   {
     timestamps: true,

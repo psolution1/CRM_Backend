@@ -8,7 +8,7 @@ const leadSchema = new mongoose.Schema({
   },
   full_name: {
     type: String,
-    // required: true,
+   // required: true,
     trim: true,
   },
   email_id: {
@@ -22,7 +22,7 @@ const leadSchema = new mongoose.Schema({
     unique: true,
     trim: true,
   },
-  alternative_no: {
+  alternative_no: { 
     // type: Number,
     type: String,
     trim: true,
@@ -61,11 +61,12 @@ const leadSchema = new mongoose.Schema({
   add_to_calender: {
     type: String,
     trim: true,
-    default: "no",
+    default: 'no',
   },
   massage_of_calander: {
     type: String,
     trim: true,
+
   },
   lead_source: {
     // type: String,
@@ -88,7 +89,7 @@ const leadSchema = new mongoose.Schema({
   city: {
     type: String,
     trim: true,
-  },
+  }, 
   pincode: {
     type: Number,
     trim: true,
@@ -176,7 +177,7 @@ const leadSchema = new mongoose.Schema({
   },
   flat_id: {
     type: String,
-    trim: true,
+    trim: true, 
   },
   type: {
     type: String,

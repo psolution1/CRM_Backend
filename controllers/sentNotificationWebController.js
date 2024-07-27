@@ -1,23 +1,22 @@
 const admin = require("firebase-admin");
 const webNotification = require("../models/notificationForWebModel");
-const Notification = require("../models/notificationModel");
+const Notification=require("../models/notificationModel");
 const Lead = require("../models/leadModel");
 const schedule = require("node-schedule");
 const FCM = require("fcm-node");
-const serverKey =
-  "AAAAnus9Ao0:APA91bGCHcEiRwMsFRbsnN8od663jhfhdnuq10H2jMMmFzVrCVBACE4caGSZ-mAwf3VB6n_fUmrHxKPou1oyBaKXfUfcnAz6J2TTJm12woXqJVTleay2RSE0KPzuRTI2QppI3rrYY2HQ"; // Replace with your actual server key
+const serverKey = "AAAAnus9Ao0:APA91bGCHcEiRwMsFRbsnN8od663jhfhdnuq10H2jMMmFzVrCVBACE4caGSZ-mAwf3VB6n_fUmrHxKPou1oyBaKXfUfcnAz6J2TTJm12woXqJVTleay2RSE0KPzuRTI2QppI3rrYY2HQ"; // Replace with your actual server key
 const fcm = new FCM(serverKey);
-
+  
 async function scheduleJob() {
   try {
     const inputDate = new Date();
     inputDate.setHours(inputDate.getHours() + 5);
     inputDate.setMinutes(inputDate.getMinutes() + 30);
     const formattedDate = inputDate.toISOString();
-
+     
     const leads = await Lead.find({
       followup_date: { $gte: formattedDate },
-      status: "65a904164473619190494480", // Exclude leads with this status
+      status: "65a904164473619190494480" // Exclude leads with this status
     });
 
     if (leads.length > 0) {
@@ -31,13 +30,14 @@ async function scheduleJob() {
         const formattedDate1 = followup_date.toISOString();
         const targetDate = new Date(formattedDate1);
 
+        
         // Schedule the job
         schedule.scheduleJob(targetDate, async () => {
-          console.log("Notification scheduled for:", targetDate);
+          console.log('Notification scheduled for:', targetDate);
 
           try {
             const tokentable = await Notification.find({ user_id: agent_id });
-            // console.log('tokentable',tokentable)
+            // console.log('tokentable',tokentable) 
             //  console.log('tokentable',tokentable[0].token)
             const token = tokentable ? tokentable[0].token : null;
 
@@ -67,8 +67,8 @@ async function scheduleJob() {
                 }
               });
             } else {
-              console.log("Token not found for agent:", agent_id);
-            }
+              console.log('Token not found for agent:', agent_id);
+            } 
           } catch (error) {
             console.error("Error fetching webNotification:", error);
           }
@@ -79,7 +79,7 @@ async function scheduleJob() {
     }
   } catch (error) {
     console.error("Error scheduling job:", error);
-  }
+  } 
 }
 
 module.exports = scheduleJob;
