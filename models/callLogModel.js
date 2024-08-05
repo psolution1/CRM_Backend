@@ -2,21 +2,31 @@ const mongoose = require("mongoose");
 
 const callLogSchema = new mongoose.Schema(
   {
-    name: {
-      type: String,
-      //required: true,
-      trim: true,
-    },
-    user_id:{
-      type: String,
+    user_id: {
+      // prospect id
+      type: mongoose.Schema.ObjectId,
+      ref: "crm_prospects",
       required: true,
-      trim: true,
     },
-    datetime: {
+    agent_id: {
+      type: mongoose.Schema.ObjectId,
+      ref: "crm_agent",
+      required: true,
+    },
+    agentEmail: {
       type: String,
       trim: true,
     },
-    calldate: {
+    callStatus: {
+      type: String,
+      trim: true,
+      default: "Not Answered",
+    },
+    callInitiatedTime: {
+      type: String,
+      trim: true,
+    },
+    callEndTime: {
       type: String,
       trim: true,
     },
@@ -28,14 +38,10 @@ const callLogSchema = new mongoose.Schema(
       type: Number,
       trim: true,
     },
-    rawtype: {
-        type: Number,
-       trim: true,
-      },
-      type: {   
-        type: String,
-        trim: true,
-      },
+    callType: {
+      type: Number,
+      trim: true,
+    },
   },
   {
     timestamps: true,
