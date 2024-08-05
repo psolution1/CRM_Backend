@@ -159,6 +159,7 @@ exports.getAgentDetails = catchAsyncErrors(async (req, res, next) => {
 
 exports.loginAgent = catchAsyncErrors(async (req, res, next) => {
   const { email, password } = req.body;
+  console.log(req.body)
   if (!email || !password) {
     return next(new ErrorHander("Plz Enter Email And Password", 400));
   }
@@ -173,7 +174,11 @@ exports.loginAgent = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHander("Invalid email Or password", 400));
   }
   const userAgent = req.useragent;
-  const token = agent.getJWTToken();
+  // const token = agent.getJWTToken();
+  // Log the token creation process
+  // console.log("Creating JWT token...");
+  // const token = agent.getJWTToken();
+  // console.log("JWT token created:", token);
   sendToken(agent, 200, res);
 });
 /// update Client Access

@@ -1,13 +1,13 @@
-//const COOKIE_EXPIRE=5;
+const COOKIE_EXPIRE=50;
  //create token and save in cookie
 
  const sendToken=(agent,statusCode,res)=>{ 
     const token =agent.getJWTToken();
-  
+ 
     /// option for coockie
     const options ={
         expires:new Date(
-            Date.now() + process.env.COOKIE_EXPIRE * 24 * 60* 60 * 1000
+            Date.now() + COOKIE_EXPIRE * 24 * 60* 60 * 1000
         ),
         httpOnly:true,
     };
