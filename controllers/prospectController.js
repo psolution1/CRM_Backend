@@ -1,6 +1,7 @@
 const Prospect = require("../models/prospectsModel");
 const responseObject = require("../utils/apiResponse");
 const { rootPath } = require("../app");
+let converter = require("json-2-csv");
 
 var XLSX = require("xlsx");
 const callLogModel = require("../models/callLogModel");
@@ -130,9 +131,46 @@ exports.createBulkProspect = async (req, res, next) => {
   }
 };
 
+exports.downloadProspect = async (req, res, next) => {
+  try {
+    const { agentEmail, disposition, campaignName } = req.query;
+    const filter = {
+      ...(agentEmail && agentEmail != "All" && { assignTo: agentEmail }),
+      ...(disposition && disposition != "All" && { disposition }),
+      ...(campaignName && campaignName != "All" && { campaignName }),
+    };
+
+    console.log("filter", agentEmail, filter);
+    const prospects = await Prospect.find(filter)
+      .select("-_id -callLogId -__v -campaignId -agent")
+      .lean();
+
+    const csv = await converter.json2csv(prospects, {});
+    return res.attachment(`prospects-${agentEmail}.csv`).send(csv);
+  } catch (err) {
+    console.log("Get prospects", err);
+    responseObject({
+      res,
+      status: 500,
+      type: "error",
+      message: "server error",
+      error: err,
+      data: null,
+    });
+  }
+};
+
 exports.getAllProspect = async (req, res, next) => {
   try {
-    const prospects = await Prospect.find({});
+    const { agentEmail, disposition, campaignName } = req.query;
+    const filter = {
+      ...(agentEmail && agentEmail != "All" && { assignTo: agentEmail }),
+      ...(disposition && disposition != "All" && { disposition }),
+      ...(campaignName && campaignName != "All" && { campaignName }),
+    };
+
+    const prospects = await Prospect.find(filter);
+
     responseObject({
       res,
       status: 200,
@@ -155,9 +193,143 @@ exports.getAllProspect = async (req, res, next) => {
   }
 };
 
+exports.getAllFilter = async (req, res, next) => {
+  try {
+    const prospectFilter = await Prospect.aggregate([
+      {
+        $facet: {
+          agents: [
+            {
+              $group: {
+                _id: "$assignTo",
+              },
+            },
+          ],
+          campaigns: [
+            {
+              $group: {
+                _id: "$campaignName",
+              },
+            },
+          ],
+        },
+      },
+    ]);
+    responseObject({
+      res,
+      status: 200,
+      type: "success",
+      message: "your prospects",
+      data: prospectFilter.length > 0 ? prospectFilter[0] : null,
+      error: null,
+    });
+  } catch (err) {
+    console.log("Get prospects", err);
+    responseObject({
+      res,
+      status: 500,
+      type: "error",
+      message: "server error",
+      error: err,
+      data: null,
+    });
+  }
+};
+
 exports.getStats = async (req, res, next) => {
   try {
-    const prospects = await Prospect.find({});
+    const prospects = await Prospect.aggregate([
+      {
+        $facet: {
+          upcomingFollowups: [
+            { $match: { totalCalls: 0 } },
+            { $count: "count" },
+          ],
+          totalOverdue: [
+            {
+              $match: {
+                scheduledDate: {
+                  $lt: new Date(),
+                },
+              },
+            },
+            { $count: "count" },
+          ],
+          totalPendingCalls: [
+            {
+              $match: {
+                scheduledDate: {
+                  $gt: new Date(),
+                },
+              },
+            },
+            { $count: "count" },
+          ],
+          totalProspects: [{ $count: "count" }],
+          totalFreshProspects: [
+            {
+              $match: {
+                disposition: "Lead Generation",
+              },
+            },
+            { $count: "count" },
+          ],
+          totalAgents: [{ $group: { _id: "$assignTo" } }, { $count: "count" }],
+        },
+      },
+      {
+        $project: {
+          upcomingFollowups: {
+            $ifNull: [
+              {
+                $arrayElemAt: ["$upcomingFollowups.count", 0],
+              },
+              0,
+            ],
+          },
+          totalOverdue: {
+            $ifNull: [
+              {
+                $arrayElemAt: ["$totalOverdue.count", 0],
+              },
+              0,
+            ],
+          },
+          totalPendingCalls: {
+            $ifNull: [
+              {
+                $arrayElemAt: ["$totalPendingCalls.count", 0],
+              },
+              0,
+            ],
+          },
+          totalProspects: {
+            $ifNull: [
+              {
+                $arrayElemAt: ["$totalProspects.count", 0],
+              },
+              0,
+            ],
+          },
+          totalFreshProspects: {
+            $ifNull: [
+              {
+                $arrayElemAt: ["$totalFreshProspects.count", 0],
+              },
+              0,
+            ],
+          },
+          totalAgents: {
+            $ifNull: [
+              {
+                $arrayElemAt: ["$totalAgents.count", 0],
+              },
+              0,
+            ],
+          },
+        },
+      },
+    ]);
     responseObject({
       res,
       status: 200,

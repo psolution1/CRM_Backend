@@ -11,6 +11,9 @@ const {
   overDueCalling,
   prospectWiseReport,
   getAgentWiseStates,
+  downloadProspect,
+  getAllFilter,
+  getStats,
 } = require("../controllers/prospectController");
 const upload = require("../middleware/upload");
 
@@ -30,5 +33,7 @@ router.route("/fresh_calling").get(freshCalling);
 router.route("/overdue_call").get(overDueCalling);
 router.route("/report_prospects_wise").get(prospectWiseReport);
 router.route("/report_prospects_wise/:agentId").get(getAgentWiseStates);
-// router.route("/delete_prospect/:id").delete(deleteProspect);
+router.route("/download_prospects").get(downloadProspect);
+router.route("/get_all_prospects_filters").get(getAllFilter);
+router.route("/get_dashboard_stats").get(getStats);
 module.exports = router;
