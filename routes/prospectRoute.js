@@ -14,6 +14,8 @@ const {
   downloadProspect,
   getAllFilter,
   getStats,
+  getProspectFiles,
+  downloadUploadedProspect,
 } = require("../controllers/prospectController");
 const upload = require("../middleware/upload");
 
@@ -36,4 +38,6 @@ router.route("/report_prospects_wise/:agentId").get(getAgentWiseStates);
 router.route("/download_prospects").get(downloadProspect);
 router.route("/get_all_prospects_filters").get(getAllFilter);
 router.route("/get_dashboard_stats").get(getStats);
+router.route("/get_all_prospects_files").get(getProspectFiles);
+router.route("/download_prospect/:fileName").get(downloadUploadedProspect);
 module.exports = router;

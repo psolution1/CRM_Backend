@@ -90,9 +90,10 @@ agentSchema.methods.getJWTToken = function () {
 // agentSchema.methods.getJWTToken = function () {
 //   console.log("i am going to gen token");
 //     return jwt.sign({ id: this._id },"jhfgdfdssedrftghjkl", {
-//       expiresIn: "5d",
+//      expiresIn: "5d",
 //     });
-//   };
+// };
+
 
 // compare password
 

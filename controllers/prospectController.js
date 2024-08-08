@@ -2,11 +2,12 @@ const Prospect = require("../models/prospectsModel");
 const responseObject = require("../utils/apiResponse");
 const { rootPath } = require("../app");
 let converter = require("json-2-csv");
-
+const fs = require("fs");
 var XLSX = require("xlsx");
 const callLogModel = require("../models/callLogModel");
 const agentModel = require("../models/agentModel");
 const CampaignModel = require("../models/campaignModel");
+const path = require("path");
 console.log("rootPath", __dirname, __dirname + "/../");
 
 exports.createProspect = async (req, res, next) => {
@@ -86,9 +87,9 @@ exports.createBulkProspect = async (req, res, next) => {
       const assignAgentToProspect = agentProspects.map((prospect) => {
         return {
           ...prospect,
-          assignPhone: agent.agent_mobile,
-          assignTo: agent.agent_email,
-          agent: agent._id,
+          // assignPhone: agent.agent_mobile,
+          // assignTo: agent.agent_email,
+          // agent: agent._id,
           campaignName: campaign.name,
           campaignId: campaign._id,
           totalCalls: 0,
@@ -418,6 +419,8 @@ exports.updateProspect = async (req, res, next) => {
     prospect.scheduledDate = scheduledDate;
     prospect.disposition = disposition;
 
+    // console.log("prospect", prospect);
+
     const newCallLogs = new callLogModel({
       user_id: prospect._id,
       agentEmail,
@@ -435,10 +438,9 @@ exports.updateProspect = async (req, res, next) => {
 
     if (!quit) {
       const newProspect = await Prospect.findOne({
-        assignTo: agentEmail,
-        totalCalls: 0,
+        $and: [{ campaignId: prospect.campaignId }, { totalCalls: 0 }],
       });
-      console.log("newProspect", newProspect, agentEmail);
+      // console.log("newProspect", newProspect, agentEmail);
       return responseObject({
         res,
         status: 200,
@@ -472,11 +474,53 @@ exports.updateProspect = async (req, res, next) => {
 
 exports.startCalling = async (req, res, next) => {
   try {
-    const agent = req.query.agentEmail;
+    const agentEmail = req.query.agentEmail;
     const campaignId = req.query.campaignId;
+
+    // assignPhone: agent.agent_mobile,
+    // assignTo: agent.agent_email,
+    // agent: agent._id,
+
+    // const prospect = await Prospect.findOne({
+    //   $and: [{ assignTo: agent }, { campaignId }, { totalCalls: 0 }],
+    // }).sort("lastCallDate");
     const prospect = await Prospect.findOne({
-      $and: [{ assignTo: agent }, { campaignId }, { totalCalls: 0 }],
+      $and: [{ campaignId }, { totalCalls: 0 }],
     }).sort("lastCallDate");
+
+    if (!prospect) {
+      return responseObject({
+        res,
+        status: 400,
+        type: "error",
+        message: "Prospect Not Found",
+        data: null,
+        error: null,
+      });
+    }
+
+    const agent = await agentModel.findOne({
+      agent_email: agentEmail,
+    });
+
+    if (!agent) {
+      return responseObject({
+        res,
+        status: 400,
+        type: "error",
+        message: "Agent Not Found",
+        data: null,
+        error: null,
+      });
+    }
+    const assignTo = agent.agent_email;
+    prospect.assignTo = assignTo;
+    prospect.lastCallDate = new Date();
+    prospect.totalCalls = prospect.totalCalls + 1;
+    prospect.assignPhone = agent.agent_mobile;
+    prospect.agent = agent._id;
+
+    await prospect.save();
 
     console.log("prospect", prospect);
     responseObject({
@@ -502,11 +546,34 @@ exports.startCalling = async (req, res, next) => {
 
 exports.freshCalling = async (req, res, next) => {
   try {
-    const agent = req.query.agentEmail;
+    const agentEmail = req.query.agentEmail;
     const campaignId = req.query.campaignId;
     const prospect = await Prospect.findOne({
-      $and: [{ assignTo: agent }, { campaignId }, { totalCalls: 0 }],
+      $and: [{ campaignId }, { totalCalls: 0 }],
     }).skip(1);
+
+    const agent = await agentModel.findOne({
+      agent_email: agentEmail,
+    });
+
+    if (!agent) {
+      return responseObject({
+        res,
+        status: 400,
+        type: "error",
+        message: "Agent Not Found",
+        data: null,
+        error: null,
+      });
+    }
+    const assignTo = agent.agent_email;
+    prospect.assignTo = assignTo;
+    prospect.lastCallDate = new Date();
+    prospect.totalCalls = prospect.totalCalls + 1;
+    prospect.assignPhone = agent.agent_mobile;
+    prospect.agent = agent._id;
+
+    await prospect.save();
 
     responseObject({
       res,
@@ -858,6 +925,51 @@ exports.getAgentWiseStates = async (req, res, next) => {
     });
   } catch (err) {
     console.log("Get prospects", err);
+    responseObject({
+      res,
+      status: 500,
+      type: "error",
+      message: "server error",
+      error: err,
+      data: null,
+    });
+  }
+};
+
+exports.getProspectFiles = async (req, res, next) => {
+  try {
+    //list all files form upload folder
+
+    const files = fs.readdirSync("uploads/");
+    console.log("files", files);
+    responseObject({
+      res,
+      status: 200,
+      type: "success",
+      message: "your files",
+      data: files,
+      error: null,
+    });
+  } catch (err) {
+    console.log("Get files", err);
+    responseObject({
+      res,
+      status: 500,
+      type: "error",
+      message: "server error",
+      error: err,
+      data: null,
+    });
+  }
+};
+
+exports.downloadUploadedProspect = async (req, res, next) => {
+  try {
+    const filePath = path.join(__dirname, "../uploads/" + req.params.fileName);
+    res.download(filePath);
+    // res.attachment(req.params.fileName).send(csv);
+  } catch (err) {
+    console.log("Get files", err);
     responseObject({
       res,
       status: 500,
